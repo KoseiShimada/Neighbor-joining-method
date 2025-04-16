@@ -1,0 +1,139 @@
+ program ensh4
+       implicit none 
+
+       integer::i , j, y, g , k, nseq,h,q
+      character(len=40),dimension(15)::name
+      integer, dimension(15,15)::sbst
+      real,dimension(15,15)::cdis=900.00
+      real,dimension(15,15)::dis, Sn
+      real,dimension(15)::Re=0.0000
+      real,dimension(15)::Le=0.0000
+      real,dimension(15)::minS
+      real,dimension(15)::TT 
+      real,dimension(15)::T
+
+
+      read (*,'(i5)')nseq 
+      do i=1,nseq-1
+       do j=i+1,nseq
+       read(*,'(a40)')name(i)
+       read(*,'(a40)')name(j)
+       read(*,'(i5)')sbst(i,j)
+       read(*,'(f6.4)')dis(i,J)
+       read(*,'(f6.4)')cdis(i,j)
+       end do
+      end do
+      do i=1,nseq-1
+      do j=i+1,nseq
+     ! write(*,'(f6.4)')cdis(i,j)
+       end do
+      end do
+
+
+      do k=1,nseq-2
+      Re=0
+      T=0
+      TT=0
+       do i=1,nseq-1
+       do j=i+1,nseq
+      if(cdis(i,j)<10) T(k)=T(k)+cdis(i,j)
+     ! write(*,'(i4,3x,f10.4)')k,T(k)
+      end do
+      end do
+     !write(*,'(i4,3x,f10.4)')k,T(k) 
+      TT(k)=T(k)*2
+      do i=1,nseq
+      if(i/=nseq)then
+       do j=i+1,nseq
+      if(cdis(i,j)<10)    Re(i)=Re(i)+cdis(i,j)
+       end do
+       end if
+       end do
+       do i=1,nseq
+       if(i/=1)then
+       do j=1,i-1
+      if(cdis(j,i)<10)  Re(i)=Re(i)+cdis(j,i)
+     ! write(*,'(i4,f10.5)')i,Re(i)
+      end do
+      end if
+      end do
+
+       do i=1,nseq-1
+        do j=i+1,nseq
+        if(cdis(i,j)<10.00)Sn(i,j)=(TT(k)-Re(i)-Re(j)+(nseq-1-&
+         k)*cdis(i,j))/(2*(nseq-1-k))
+        end do
+        end do
+     
+        minS=100
+       do i=1,nseq-1
+        do j=i+1,nseq
+       if(Sn(i,j)<minS(k))then
+       minS(k)=Sn(i,j)
+       h=i
+      q=j 
+      end if
+         end do
+         end do
+    
+       ! do i=1,nseq-1
+      !   do j=i+1,nseq
+      
+       write(*,'(i4,3x,a40,3x,a40)')k,name(h),name(q)
+       Le(h)=((nseq-1-k)*cdis(h,q)+Re(h)-Re(q))/(2*(nseq-1-k))
+       Le(q)=((nseq-1-k)*cdis(h,q)-Re(h)+Re(q))/(2*(nseq-1-k))
+       write(*,'(f10.4,40x,f10.4)')Le(h),Le(q)
+       !if(k==nseq-2)go to 300
+
+     !   do i=1,nseq-1
+      ! do j=i+1,nseq
+       !if(Sn(i,j)==minS(k))then
+        do y=1,nseq
+        cdis(h,y)=cdis(h,y)-Le(h)
+        cdis(y,h)=cdis(y,h)-Le(h)
+        cdis(q,y)=cdis(q,y)-Le(q)
+        cdis(y,q)=cdis(y,q)-Le(q)
+        end do
+      !  endif  
+      !end do 
+      !end do
+
+      do i=1,nseq-1
+       do j=i+1,nseq
+       if(cdis(i,j)<0) cdis(i,j)=900.00
+       end do 
+       end do
+
+      
+       do i=1,nseq-1
+        do j=i+1,nseq
+        if(Sn(i,j)==minS(k))then 
+         if(i/=1) then
+          do y=1,i-1
+         cdis(y,i)=(cdis(y,i)+cdis(y,j))/2
+         cdis(y,j)=900.00
+         end do
+         end if 
+         do y=i+1,j-1
+          cdis(i,y)=(cdis(i,y)+cdis(y,j))/2
+         cdis(y,j)=900.00
+         end do
+         cdis(i,J)=900.00
+        go to 200
+         end if
+       end do
+       end do
+
+ 200     end do
+       do i=1,nseq-1
+        do j=i+1,nseq
+       if(cdis(i,j)<5.0)then
+       write(*,'(a40,20x,a40)')name(i),name(j)
+       write(*,'(f10.4)') cdis(i,j)
+       end if
+       end do
+       end do
+       stop
+      end program ensh4
+
+      
